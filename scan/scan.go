@@ -41,6 +41,7 @@ const (
 	Operator   // known operator
 	Op         // "op", operator definition keyword
 	OpDelete   // "opdelete", operator undefinition keyword
+	OpMap      // "opmap", operator map-function keyword
 	Rational   // rational number like 2/3
 	Complex    // complex number like 3j2
 	RightBrack // ']'
@@ -342,6 +343,8 @@ func lexIdentifier(l *Scanner) stateFn {
 		return l.emit(Op)
 	case word == "opdelete":
 		return l.emit(OpDelete)
+	case word == "opmap":
+		return l.emit(OpMap)
 	case word == "o" && l.peek() == '.':
 		return lexOperator
 	case l.defined(word):

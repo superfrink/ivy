@@ -470,6 +470,27 @@ func ScanFirst(c Context, op string, v Value) Value {
 
 }
 
+// EvalUserDefinedMap applies op elementwise to v.
+func EvalUserDefinedMap(c Context, op string, v Value) Value {
+	switch v := v.(type) {
+	case Int, BigInt, BigRat, BigFloat, Complex:
+		return c.EvalUnary(op, v)
+	case Vector:
+		if len(v) == 0 {
+			return v
+		}
+
+		acc := NewVector(make([]Value, 0, len(v)))
+		for i, end := 0, len(v); i < end; i++ {
+			acc.Append(c.EvalUnary(op, v[i]))
+		}
+
+		return acc
+	}
+	Errorf("can't do opmap on %s", whichType(v))
+	panic("not reached")
+}
+
 // unaryVectorOp applies op elementwise to i.
 func unaryVectorOp(c Context, op string, i Value) Value {
 	u := i.(Vector)
@@ -726,8 +747,10 @@ func mod(c Context, a, b Value) Value {
 // QuoRem uses Euclidean division to return the quotient and remainder for a/b.
 // The quotient will be an integer, possibly negative; the remainder is always positive
 // and may be fractional. Returned values satisfy the identity that
+//
 //	quo = a div b  such that
 //	rem = a - b*quo  with 0 <= rem < |y|
+//
 // See comment for math/big.Int.DivMod for details.
 // Exported for testing.
 func QuoRem(op string, c Context, a, b Value) (div, rem Value) {

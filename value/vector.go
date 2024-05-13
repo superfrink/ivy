@@ -51,6 +51,10 @@ func (v Vector) ProgString() string {
 	panic("vector.ProgString - cannot happen")
 }
 
+func (v *Vector) Append(val Value) {
+	*v = append(*v, val)
+}
+
 // Constants to make it easier to read calls to the printing routines.
 const (
 	withParens        = true
@@ -85,10 +89,12 @@ func (v Vector) oneLineSprint(conf *config.Config, parens, spaces bool) (string,
 // multiLineSprint formats a vector that may span multiple lines,
 // returning the result as a slice of strings, one per line.
 // Lots of flags:
+//
 //	allScalars: the vector is all scalar values and can be printed without parens.
 //	allChars: the vector is all chars and can be printed extra simply.
 //	spaces: put spaces between elements.
 //	trim: remove trailing spaces from each line.
+//
 // If trim is not set, the lines are all of equal length, bytewise.
 //
 // The return values are the printed lines and, along the other axis,

@@ -44,6 +44,8 @@ func tree(e interface{}) string {
 		return fmt.Sprintf("(%s %s)", e.op, tree(e.right))
 	case *binary:
 		return fmt.Sprintf("(%s %s %s)", tree(e.left), e.op, tree(e.right))
+	case *opMap:
+		return fmt.Sprintf("(opmap %s %s)", e.op, tree(e.right))
 	case conditional:
 		return tree(e.binary)
 	case *index:
@@ -188,6 +190,19 @@ func isCompound(x interface{}) bool {
 	default:
 		return true
 	}
+}
+
+type opMap struct {
+	op    string
+	right value.Expr
+}
+
+func (u *opMap) ProgString() string {
+	return fmt.Sprintf("opmap %s %s", u.op, u.right.ProgString())
+}
+
+func (u *opMap) Eval(context value.Context) value.Value {
+	return context.UserDefinedMap(u.op, u.right.Eval(context).Inner())
 }
 
 type unary struct {
@@ -522,6 +537,12 @@ func (p *Parser) operand(tok scan.Token, indexOK bool) value.Expr {
 			op:    tok.Text,
 			right: p.expr(),
 		}
+	case scan.OpMap:
+		expr = &opMap{
+			op:    p.next().Text,
+			right: p.expr(),
+		}
+
 	case scan.Identifier:
 		if p.context.DefinedUnary(tok.Text) {
 			expr = &unary{
