@@ -1,0 +1,24 @@
+
+# One input value returning a vector.
+op double N = N * 2
+input = 4
+output = opmap double input
+output
+
+	8
+
+# One input value returning a vector.
+op mulunder20 M = ((T mod M) == 0) sel T = -1 drop iota 20
+input = 4
+output = opmap mulunder20 input
+output
+
+	4 8 12 16
+
+# Vector input returning a vector of vectors.
+op mulunder20 M = ((T mod M) == 0) sel T = -1 drop iota 20
+input = 3 5
+output = opmap mulunder20 input
+output
+
+	(3 6 9 12 15 18) (5 10 15)

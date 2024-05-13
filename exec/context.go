@@ -152,6 +152,16 @@ func (c *Context) EvalUnary(op string, right value.Value) value.Value {
 	return fn.EvalUnary(c, right)
 }
 
+// UserDefinedMap evalutes a user-defined operator on each element of the right operand.
+func (c *Context) UserDefinedMap(op string, right value.Value) value.Value {
+	fn := c.Unary(op)
+	if fn == nil {
+		value.Errorf("unary %q not implemented", op)
+	}
+
+	return value.EvalUserDefinedMap(c, op, right)
+}
+
 func (c *Context) Unary(op string) value.UnaryOp {
 	userFn := c.UnaryFn[op]
 	if userFn != nil {

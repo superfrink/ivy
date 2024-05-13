@@ -73,4 +73,7 @@ type Context interface {
 
 	// UserDefined reports whether the specified op is user-defined.
 	UserDefined(op string, isBinary bool) bool
+
+	// UserDefinedMap evalutes a user-defined operator on each element of the right operand.
+	UserDefinedMap(op string, right Value) Value
 }
